@@ -177,7 +177,7 @@ AS (
         (SELECT value.string_value FROM UNNEST(event_params) WHERE key = 'demandbase_country_name') AS demandbase_country_name
 
         FROM `bigquery-public-data.ga4_obfuscated_sample_ecommerce.events_*`
-        WHERE _TABLE_SUFFIX > FORMAT_DATE('%Y%m%d', "2020-01-01")
+        WHERE _TABLE_SUFFIX > FORMAT_DATE('%Y%m%d', event_date_checkpoint)
     )
 
     --Ensure ga_session_id is not null

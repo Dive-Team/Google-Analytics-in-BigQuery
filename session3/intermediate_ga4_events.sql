@@ -6,8 +6,7 @@
 
 WITH all_rows AS (
   SELECT * EXCEPT(
-      engagement_time_msec, --This parameter should be set to 0 when NULL (see below)
-      user_properties), --Exclude user_properties for now (these will be processed by a query that creates user-scoped dimensions)
+      engagement_time_msec), --engagement_time_msec will be set to 0 when NULL (see below)
 
     --Create unique keys
     TO_HEX(MD5(CONCAT(stream_id,user_pseudo_id,ga_session_id))) AS full_session_id,

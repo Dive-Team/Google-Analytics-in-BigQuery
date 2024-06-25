@@ -90,13 +90,13 @@ add_last_click_attribution AS (
 ),
 
 --Create last non-direct click attribution dimension to match the GA4 user interface
---Where a session is set to direct, search the prior 30 days for a non-direct traffic source to replace the current information
+--Where a session is set to direct, search the prior 90 days for a non-direct traffic source to replace the current information
 add_last_non_direct AS (
   SELECT *,
     IF(last_click_attribution.session_manual_medium = '(not set)',
       LAST_VALUE(last_nondirect_attribution IGNORE NULLS) OVER(
         PARTITION BY primary_user_id ORDER BY UNIX_SECONDS(session_start)
-        RANGE BETWEEN 2592000 PRECEDING AND 1 PRECEDING),last_click_attribution -- Check prior 30 days for the last non-direct session attribution
+        RANGE BETWEEN 7776000 PRECEDING AND 1 PRECEDING),last_click_attribution -- Check prior 90 days for the last non-direct session attribution
     ) AS last_non_direct_attribution,
   FROM add_last_click_attribution
 )

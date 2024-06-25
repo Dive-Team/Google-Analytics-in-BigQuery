@@ -76,14 +76,15 @@ add_last_click_attribution AS (
     --Create a STRUCT to identify the last traffic source that was identified during the session (if more than one were set)
     CASE 
       WHEN (last_session_gclid IS NOT NULL OR last_session_wbraid IS NOT NULL OR last_session_gbraid IS NOT NULL) 
-        THEN STRUCT('google' AS last_session_manual_source, 'cpc' AS last_session_manual_medium, last_session_manual_campaign_name AS last_session_manual_campaign_name) 
-      
+        THEN STRUCT('google' AS session_manual_source, 'cpc' AS session_manual_medium, last_session_manual_campaign_name AS session_manual_campaign_name) 
+    
       --If the event-scoped traffic source parameters are not null, apply them
       WHEN COALESCE(last_session_manual_source, last_session_manual_medium, last_session_manual_campaign_name) IS NOT NULL 
-        THEN STRUCT(last_session_manual_source AS last_session_manual_source, last_session_manual_medium AS last_session_manual_medium, last_session_manual_campaign_name AS last_session_manual_campaign_name)
+        THEN STRUCT(last_session_manual_source AS session_manual_source, last_session_manual_medium AS session_manual_medium, last_session_manual_campaign_name AS session_manual_campaign_name)
       
       --Default everything else to NULL
       ELSE NULL
+    
     END AS last_nondirect_attribution,
   FROM base_sessions_table 
 ),

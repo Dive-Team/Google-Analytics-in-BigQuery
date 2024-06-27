@@ -14,7 +14,7 @@ WITH clickStats AS (
 SELECT
   clickStats.campaign_id,
   clickStats.click_view_gclid,
-  LOWER(ads_campaigns.campaign_name) AS campaign_name,
+  SAFE_CAST(LOWER(ads_campaigns.campaign_name) AS STRING) AS campaign_name,
   ads_campaigns.campaign_advertising_channel_type,
   ads_campaigns.customer_id 
 FROM clickStats

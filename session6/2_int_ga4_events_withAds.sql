@@ -3,7 +3,10 @@
  */
 
 WITH all_rows AS (
-  SELECT * EXCEPT(engagement_time_msec),
+  SELECT 
+    t1.* EXCEPT(engagement_time_msec, event_manual_campaign_name),
+    t2.*,
+
     --Create unique keys
     TO_HEX(MD5(CONCAT(stream_id,user_pseudo_id,ga_session_id))) AS full_session_id,
     TO_HEX(MD5(CONCAT(user_pseudo_id,ga_session_id,event_name,event_timestamp,event_bundle_sequence_id))) as event_id,
@@ -19,7 +22,11 @@ WITH all_rows AS (
     --(optional) This is a great place to apply a custom content grouping
 
     --Get referring domain
-    CASE WHEN event_manual_medium = "referral" THEN NET.REG_DOMAIN(event_manual_source) END AS referring_domain
+    CASE WHEN event_manual_medium = "referral" THEN NET.REG_DOMAIN(event_manual_source) END AS referring_domain,
+
+    --Import campaign dimensions from Google Ads
+    COALESCE(SAFE_CAST(ads_campaigns.campaign_name AS STRING),t1.event_manual_campaign_name) AS event_manual_campaign_name,
+    ads_campaigns.campaign_advertising_channel_type
     
   FROM `df-warehouse.df_warehouse_extras.sample_stg_ga4_events` t1
   JOIN `df-warehouse.df_warehouse_extras.sample_identity_graph` t2 ON t1.user_pseudo_id = t2.ig_user_pseudo_id
